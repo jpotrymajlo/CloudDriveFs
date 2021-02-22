@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+from dropbox.dropbox import DropboxAuth
 import sys
 
 
@@ -12,6 +13,7 @@ import errno
 import pyfuse3
 import pyfuse3_asyncio
 import handlers
+import auth
 
 try:
     import faulthandler
@@ -38,7 +40,7 @@ def parse_args():
 
 
 def main():
-    options = parse_args()
+#    options = parse_args()
 
     logger.setLevel(logging.DEBUG)
     
@@ -46,26 +48,34 @@ def main():
     formatter = logging.Formatter('%(asctime)s [%(name)s %(levelname)s] %(message)s')
     sh.setFormatter(formatter)
     logger.addHandler(sh)
+    
+    logger.info('start Dropbox')
+    dropbox = DropboxAuth("file")
+    dropbox.get_token()
 
-    testfs = handlers.FuseHandlers()
-    fuse_options = set(pyfuse3.default_options)
-    fuse_options.add('fsname=CloudFs')
-    if options.debug_fuse:
-        fuse_options.add('debug')
+ #   access_token = new auth.AccessToken(82a3hh7rvxf40po, 82a3hh7rvxf40po )
+#    token = access_token.get_token()
 
-    logger.info("start fs")
 
-    pyfuse3.init(testfs, "/media/jacek/cloudfs", fuse_options)
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(pyfuse3.main())
-    except:
-        pyfuse3.close(unmount=False)
-        raise
-    finally:
-        loop.close()
+#    testfs = handlers.FuseHandlers()
+#    fuse_options = set(pyfuse3.default_options)
+#    fuse_options.add('fsname=CloudFs')
+#    if options.debug_fuse:
+#        fuse_options.add('debug')
+#
+#    logger.info("start fs")
+##
+#    pyfuse3.init(testfs, "/media/jacek/cloudfs", fuse_options)
+#    loop = asyncio.get_event_loop()
+#    try:
+#        loop.run_until_complete(pyfuse3.main())
+#    except:
+#        pyfuse3.close(unmount=False)
+#        raise
+#    finally:
+#        loop.close()
 
-    pyfuse3.close()
+#    pyfuse3.close()
 
 
 if __name__ == '__main__':
